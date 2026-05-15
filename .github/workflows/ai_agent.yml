@@ -1,0 +1,35 @@
+name: Cloud AI Agent
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  run-ai:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-python: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        pip install google-genai
+
+    - name: Run AI Agent
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        ISSUE_BODY: ${{ github.event.issue.body }}
+        ISSUE_TITLE: ${{ github.event.issue.title }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ISSUE_NUMBER: ${{ github.event.issue.number }}
+      run: |
+        python agent.py
